@@ -36,8 +36,9 @@
 #include "detectNet.h"
 
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
+#define DEFAULT_CAMERA 0	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
 		
+#define HOST_MACHINE // Define if running over RDP
 
 bool signal_recieved = false;
 
@@ -181,8 +182,13 @@ int main( int argc, char** argv )
 		// convert from YUV to RGBA
 		void* imgRGBA = NULL;
 		
-		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
+#ifdef HOST_MACHINE
+		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA, true) ) {
+#else
+		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) ) {
+#endif
 			printf("detectnet-camera:  failed to convert from NV12 to RGBA\n");
+		}
 
 		// classify image with detectNet
 		int numBoundingBoxes = maxBoxes;
@@ -246,6 +252,7 @@ int main( int argc, char** argv )
 								   (float4*)imgRGBA, make_float2(0.0f, 1.0f), 
 		 						   camera->GetWidth(), camera->GetHeight()));
 
+#ifndef HOST_MACHINE
 				// map from CUDA to openGL using GL interop
 				void* tex_map = texture->MapCUDA();
 
@@ -254,6 +261,10 @@ int main( int argc, char** argv )
 					cudaMemcpy(tex_map, imgRGBA, texture->GetSize(), cudaMemcpyDeviceToDevice);
 					texture->Unmap();
 				}
+#else
+				CUDA(cudaDeviceSynchronize());
+				texture->UploadCPU(imgRGBA);
+#endif
 
 				// draw the texture
 				texture->Render(100,100);		
