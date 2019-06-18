@@ -151,7 +151,8 @@ int main( int argc, char** argv )
 		// convert from YUV to RGBA
 		void* imgRGBA = NULL;
 		
-		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
+		// if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
+		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA, true) )
 			printf("imagenet-camera:  failed to convert from NV12 to RGBA\n");
 
 		// classify image
@@ -193,13 +194,16 @@ int main( int argc, char** argv )
 		 						   camera->GetWidth(), camera->GetHeight()));
 
 				// map from CUDA to openGL using GL interop
-				void* tex_map = texture->MapCUDA();
+				/*void* tex_map = texture->MapCUDA();
 
 				if( tex_map != NULL )
 				{
 					cudaMemcpy(tex_map, imgRGBA, texture->GetSize(), cudaMemcpyDeviceToDevice);
 					texture->Unmap();
-				}
+				}*/
+
+				CUDA(cudaDeviceSynchronize());
+				texture->UploadCPU(imageRGBA);
 
 				// draw the texture
 				texture->Render(100,100);		
