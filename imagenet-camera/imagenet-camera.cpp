@@ -34,7 +34,7 @@
 #include "imageNet.h"
 
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
+#define DEFAULT_CAMERA 0	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
 		
 		
 		
@@ -136,24 +136,28 @@ int main( int argc, char** argv )
 	 * processing loop
 	 */
 	float confidence = 0.0f;
-	
+	printf("Got to the processing loop\n");
 	while( !signal_recieved )
 	{
 		void* imgCPU  = NULL;
 		void* imgCUDA = NULL;
 		
 		// get the latest frame
-		if( !camera->Capture(&imgCPU, &imgCUDA, 1000) )
+		if( !camera->Capture(&imgCPU, &imgCUDA, 10000) )
 			printf("\nimagenet-camera:  failed to capture frame\n");
-		//else
-		//	printf("imagenet-camera:  recieved new frame  CPU=0x%p  GPU=0x%p\n", imgCPU, imgCUDA);
+		else
+			printf("imagenet-camera:  recieved new frame  CPU=0x%p  GPU=0x%p\n", imgCPU, imgCUDA);
 		
 		// convert from YUV to RGBA
 		void* imgRGBA = NULL;
 		
+
+		printf("Before ConvertRGBA\n");
 		// if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
 		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA, true) )
 			printf("imagenet-camera:  failed to convert from NV12 to RGBA\n");
+
+		printf("After ConvertRGBA\n");
 
 		// classify image
 		const int img_class = net->Classify((float*)imgRGBA, camera->GetWidth(), camera->GetHeight(), &confidence);
