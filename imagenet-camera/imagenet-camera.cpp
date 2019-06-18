@@ -203,7 +203,7 @@ int main( int argc, char** argv )
 				}*/
 
 				CUDA(cudaDeviceSynchronize());
-				texture->UploadCPU(imageRGBA);
+				texture->UploadCPU(imgRGBA);
 
 				// draw the texture
 				texture->Render(100,100);		
