@@ -65,7 +65,8 @@ public:
 		COCO_DOG,			/**< MS-COCO dog class */
 		FACENET,			/**< Human facial detector trained on FDDB */
 		PEDNET,			/**< Pedestrian / person detector */
-		PEDNET_MULTI		/**< Multi-class pedestrian + baggage detector */
+		PEDNET_MULTI,		/**< Multi-class pedestrian + baggage detector */
+		ALEXNET
 	};
 
 	/**
