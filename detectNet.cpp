@@ -310,6 +310,8 @@ detectNet* detectNet::Create( NetworkType networkType, float threshold, uint32_t
 		return Create("networks/DetectNet-COCO-Chair/deploy.prototxt", "networks/DetectNet-COCO-Chair/snapshot_iter_89500.caffemodel", 0.0f, "networks/DetectNet-COCO-Chair/class_labels.txt", threshold, DETECTNET_DEFAULT_INPUT, DETECTNET_DEFAULT_COVERAGE, DETECTNET_DEFAULT_BBOX, maxBatchSize, precision, device, allowGPUFallback );
 	else if( networkType == COCO_DOG )
 		return Create("networks/DetectNet-COCO-Dog/deploy.prototxt", "networks/DetectNet-COCO-Dog/snapshot_iter_38600.caffemodel", 0.0f, "networks/DetectNet-COCO-Dog/class_labels.txt", threshold, DETECTNET_DEFAULT_INPUT, DETECTNET_DEFAULT_COVERAGE, DETECTNET_DEFAULT_BBOX, maxBatchSize, precision, device, allowGPUFallback );
+	else if( networkType == ALEXNET )
+		return Create("networks/GoogleNet-ILSVRC12-subset/deploy.prototxt", "networks/GoogleNet-ILSVRC12-subset/snapshot_iter_184080.caffemodel", 0.0f, "networks/GoogleNet-ILSVRC12-subset/labels.txt", threshold, DETECTNET_DEFAULT_INPUT, DETECTNET_DEFAULT_COVERAGE, DETECTNET_DEFAULT_BBOX, maxBatchSize, precision, device, allowGPUFallback );;
 	else
 		return NULL;
 #else
@@ -355,6 +357,8 @@ detectNet::NetworkType detectNet::NetworkTypeFromStr( const char* modelName )
 		type = detectNet::COCO_CHAIR;
 	else if( strcasecmp(modelName, "coco-dog") == 0 || strcasecmp(modelName, "dog") == 0 )
 		type = detectNet::COCO_DOG;
+	else if( strcasecmp(modelName, "alexnet") == 0 )
+		type = detectNet::ALEXNET;
 	else
 		type = detectNet::CUSTOM;
 
@@ -376,7 +380,7 @@ detectNet* detectNet::Create( int argc, char** argv )
 		else if( argc == 4 )
 			modelName = argv[3];
 		else
-			modelName = "pednet";
+			modelName = "alexnet";
 	}
 
 	//if( argc > 3 )
@@ -398,6 +402,8 @@ detectNet* detectNet::Create( int argc, char** argv )
 		type = detectNet::COCO_CHAIR;
 	else if( strcasecmp(modelName, "coco-dog") == 0 || strcasecmp(modelName, "dog") == 0 )
 		type = detectNet::COCO_DOG;
+	else if( strcasecmp(modelName, "alexnet") == 0 )
+		type = detectNet::ALEXNET;		
 	else
 	{
 		const char* prototxt     = cmdLine.GetString("prototxt");
